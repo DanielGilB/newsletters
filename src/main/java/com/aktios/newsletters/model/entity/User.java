@@ -1,6 +1,8 @@
 package com.aktios.newsletters.model.entity;
 
 import lombok.Data;
+import org.hibernate.event.spi.DeleteEvent;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -14,11 +16,18 @@ public class User {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Integer id;
 
-  @NotEmpty @Email private String email;
-  @NotEmpty private String name;
-  @NotEmpty private String surname;
+  @Column(nullable = false, unique = true)
+  private String email;
+
+  @Column(nullable = false)
+  private String name;
+
+  @Column(nullable = false)
+  private String surname;
+
+  @Column(nullable = false)
   private LocalDate birthday;
 
-  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-  private Subscription subscription;
+ // @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
+ // private Subscription subscription;
 }

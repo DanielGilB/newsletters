@@ -2,5 +2,12 @@ package com.aktios.newsletters.repository.tag;
 
 import com.aktios.newsletters.model.entity.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface TagRepository extends JpaRepository<Tag, Integer> {}
+import java.util.Optional;
+
+@Repository
+public interface TagRepository extends JpaRepository<Tag, Integer> {
+
+    Optional<Tag> findByName(String name);
+}
