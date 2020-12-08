@@ -16,10 +16,7 @@ public class Utils {
     subscription.setSubscriptionPeriod(SubscriptionPeriods.WEEKLY);
     subscription.setUser(fakeUser());
     subscription.setSubscribedAt(LocalDate.of(2020, 1, 1));
-    Tag tag = new Tag();
-    tag.setId(222);
-    tag.setName("ANOTHER FAKE TAG");
-    subscription.setTags(Set.of(fakeTag(), tag));
+    subscription.setTags(fakeTags());
 
     return subscription;
   }
@@ -41,5 +38,15 @@ public class Utils {
     tag.setName("FAKE TAG");
 
     return tag;
+  }
+
+  public static Set<Tag> fakeTags() {
+    Tag tag = new Tag();
+    tag.setId(222);
+    tag.setName("ANOTHER FAKE TAG");
+
+    Tag tag2 = fakeTag();
+
+    return Set.of(tag, tag2);
   }
 }

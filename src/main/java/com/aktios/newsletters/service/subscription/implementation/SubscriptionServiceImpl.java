@@ -2,6 +2,7 @@ package com.aktios.newsletters.service.subscription.implementation;
 
 import com.aktios.newsletters.exception.ExistingSubscriptionException;
 import com.aktios.newsletters.model.entity.Subscription;
+import com.aktios.newsletters.model.entity.Tag;
 import com.aktios.newsletters.repository.subscription.SubscriptionRepository;
 import com.aktios.newsletters.service.subscription.SubscriptionService;
 import com.aktios.newsletters.service.tag.TagService;
@@ -49,11 +50,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             });
 
     subscription.setTags(
-        subscription.getTags().stream()
-            .map(t -> this.tagService.findByName(t.getName()))
-            .filter(t -> t.isPresent())
-            .map(t -> t.get())
-            .collect(Collectors.toSet()));
+        this.tagService.findByNames(
+            subscription.getTags().stream().map(Tag::getName).collect(Collectors.toSet())));
 
     return this.subscriptionRepository.save(subscription);
   }

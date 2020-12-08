@@ -1,6 +1,7 @@
 package com.aktios.newsletters.unit.service;
 
 import com.aktios.newsletters.Utils;
+import com.aktios.newsletters.exception.ExistingSubscriptionException;
 import com.aktios.newsletters.model.entity.Subscription;
 import com.aktios.newsletters.model.entity.Tag;
 import com.aktios.newsletters.model.entity.User;
@@ -11,8 +12,6 @@ import com.aktios.newsletters.service.tag.TagService;
 import com.aktios.newsletters.service.user.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,7 +20,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.*;
 
@@ -30,8 +31,6 @@ public class SubscriptionServiceTest {
 
   private static final int DEFAULT_PAGE = 0;
   private static final int DEFAULT_PAGE_SIZE = 1;
-
-  @Captor ArgumentCaptor<Tag> tagCaptor;
 
   @Mock private SubscriptionRepository subscriptionRepository;
 
@@ -72,21 +71,74 @@ public class SubscriptionServiceTest {
   @Test
   void givenSubscription_whenCreate_thenShouldCreateSubscription() {
     Subscription subscription = Utils.fakeSubscription();
+    Set<String> tagNames =
+        subscription.getTags().stream().map(Tag::getName).collect(Collectors.toSet());
 
-    when(userService.findByEmail(subscription.getUser().getEmail()))
-        .thenReturn(Optional.of(subscription.getUser()));
-    when(tagService.findByName(anyString()))
-        .thenReturn(Optional.of(subscription.getTags().stream().findFirst().get()))
-        .thenReturn(Optional.of(subscription.getTags().stream().skip(1).findFirst().get()));
-    when(subscriptionRepository.save(subscription)).thenReturn(subscription);
-
+    mockSubscriptionDependencies(subscription);
     Subscription expectedSubscription = subscriptionService.create(subscription);
 
-
     verify(userService, times(1)).findByEmail(subscription.getUser().getEmail());
-    //verify(tagService, times(subscription.getTags().size())).findByName(tagCaptor.capture().getName());
+    verify(tagService, times(1)).findByNames(tagNames);
     verify(subscriptionRepository, times(1)).save(subscription);
 
     Assertions.assertEquals(expectedSubscription, subscription);
+  }
+
+  @Test
+  void givenSubscriptionWithNewUser_whenCreate_thenShouldCreateUserAndSubscription() {
+    Subscription subscription = Utils.fakeSubscription();
+    Set<String> tagNames =
+        subscription.getTags().stream().map(Tag::getName).collect(Collectors.toSet());
+    User newUser = new User();
+    newUser.setId(999);
+    newUser.setName("new name");
+    newUser.setSurname("new sur");
+    newUser.setBirthday(LocalDate.of(2020, 1, 1));
+    newUser.setEmail("newuser@email.com");
+    subscription.setUser(newUser);
+
+    mockSubscriptionDependencies(subscription);
+    when(userService.findByEmail(subscription.getUser().getEmail())).thenReturn(Optional.empty());
+    when(userService.create(newUser)).thenReturn(newUser);
+
+    Subscription expectedSubscription = subscriptionService.create(subscription);
+
+    verify(userService, times(1)).findByEmail(subscription.getUser().getEmail());
+    verify(userService, times(1)).create(newUser);
+    verify(tagService, times(1)).findByNames(tagNames);
+    verify(subscriptionRepository, times(1)).save(subscription);
+
+    Assertions.assertEquals(expectedSubscription, subscription);
+  }
+
+  @Test
+  void
+      givenSubscriptionWithUserAlreadySubscribed_whenCreate_thenShouldThrowExistingSubscriptionException() {
+    Subscription subscription = Utils.fakeSubscription();
+
+    when(userService.findByEmail(subscription.getUser().getEmail()))
+        .thenReturn(Optional.of(subscription.getUser()));
+    when(subscriptionRepository.findByUserId(subscription.getUser().getId()))
+        .thenReturn(Optional.of(mock(Subscription.class)));
+
+    ExistingSubscriptionException exception =
+        Assertions.assertThrows(
+            ExistingSubscriptionException.class,
+            () -> {
+              subscriptionService.create(subscription);
+            });
+    Assertions.assertEquals("This user is already subscribed", exception.getMessage());
+  }
+
+  void mockSubscriptionDependencies(Subscription subscription) {
+    Set<String> tagNames =
+        subscription.getTags().stream().map(Tag::getName).collect(Collectors.toSet());
+
+    when(userService.findByEmail(subscription.getUser().getEmail()))
+        .thenReturn(Optional.of(subscription.getUser()));
+    when(subscriptionRepository.findByUserId(subscription.getUser().getId()))
+        .thenReturn(Optional.empty());
+    when(tagService.findByNames(tagNames)).thenReturn(subscription.getTags());
+    when(subscriptionRepository.save(subscription)).thenReturn(subscription);
   }
 }

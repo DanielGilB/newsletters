@@ -5,7 +5,7 @@ import com.aktios.newsletters.repository.tag.TagRepository;
 import com.aktios.newsletters.service.tag.TagService;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class TagServiceImpl implements TagService {
@@ -17,7 +17,7 @@ public class TagServiceImpl implements TagService {
   }
 
   @Override
-  public Optional<Tag> findByName(String name) {
-    return this.tagRepository.findByName(name);
+  public Set<Tag> findByNames(Set<String> names) {
+    return this.tagRepository.findByNameIn(names);
   }
 }

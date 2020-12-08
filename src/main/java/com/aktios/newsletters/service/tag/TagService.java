@@ -2,15 +2,15 @@ package com.aktios.newsletters.service.tag;
 
 import com.aktios.newsletters.model.entity.Tag;
 
-import java.util.Optional;
+import java.util.Set;
 
 public interface TagService {
 
   /**
-   * Find Tag by name
+   * Find Tags by names
    *
-   * @param name
+   * @param names
    * @return
    */
-  Optional<Tag> findByName(String name);
+  Set<Tag> findByNames(Set<String> names);
 }
