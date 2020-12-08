@@ -17,6 +17,9 @@ import java.util.stream.Collectors;
 @RequestMapping("/newsletters/subscriptions")
 public class SubscriptionController {
 
+  private static final String DEFAULT_PAGE = "0";
+  private static final String DEFAULT_PAGE_SIZE = "5";
+
   private SubscriptionService subscriptionService;
 
   private ModelMapper modelMapper;
@@ -51,7 +54,8 @@ public class SubscriptionController {
 
   @GetMapping
   public ResponseEntity<List<SubscriptionDTO>> findAll(
-      @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
+      @RequestParam(defaultValue = DEFAULT_PAGE) int page,
+      @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int size) {
     try {
       List<SubscriptionDTO> subscriptionDTOS =
           this.subscriptionService.findAll(PageRequest.of(page, size)).stream()

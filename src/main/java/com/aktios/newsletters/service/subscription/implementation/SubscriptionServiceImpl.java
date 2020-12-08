@@ -10,8 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,11 +40,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
               subscription.setUser(this.userService.create(subscription.getUser()));
             });
 
-    // Only can exists one subscription per user
+    // Only can exists one service per user
     this.subscriptionRepository
         .findByUserId(subscription.getUser().getId())
         .ifPresent(
-                s -> {
+            s -> {
               throw new ExistingSubscriptionException("This user is already subscribed");
             });
 
