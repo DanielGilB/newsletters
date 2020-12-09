@@ -30,7 +30,7 @@ import static org.mockito.Mockito.*;
 public class SubscriptionServiceTest {
 
   private static final int DEFAULT_PAGE = 0;
-  private static final int DEFAULT_PAGE_SIZE = 1;
+  private static final int DEFAULT_PAGE_SIZE = 5;
 
   @Mock private SubscriptionRepository subscriptionRepository;
 

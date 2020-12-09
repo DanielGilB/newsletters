@@ -30,20 +30,22 @@ public class SubscriptionController {
   }
 
   @PostMapping
-  public ResponseEntity<Integer> create(@RequestBody @Valid SubscriptionDTO subscriptionDTO) {
+  public ResponseEntity<SubscriptionDTO> create(
+      @RequestBody @Valid SubscriptionDTO subscriptionDTO) {
     try {
-      Integer subscriptionId =
-          this.subscriptionService
-              .create(this.modelMapper.map(subscriptionDTO, Subscription.class))
-              .getId();
-      return new ResponseEntity<>(subscriptionId, HttpStatus.OK);
+      Subscription subscription =
+          this.subscriptionService.create(
+              this.modelMapper.map(subscriptionDTO, Subscription.class));
+
+      return new ResponseEntity<>(
+          this.modelMapper.map(subscription, SubscriptionDTO.class), HttpStatus.CREATED);
     } catch (Exception e) {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<HttpStatus> deleteById(@PathVariable("id") Integer id) {
+  public ResponseEntity<HttpStatus> delete(@PathVariable("id") Integer id) {
     try {
       this.subscriptionService.deleteById(id);
       return new ResponseEntity<>(HttpStatus.OK);

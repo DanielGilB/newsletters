@@ -16,6 +16,4 @@ public class Tag {
 
   @Column(nullable = false, unique = true)
   private String name;
-
-  //@ManyToMany private Set<Subscription> subscriptions = new HashSet<>();
 }

@@ -28,6 +28,4 @@ public class User {
   @Column(nullable = false)
   private LocalDate birthday;
 
- // @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
- // private Subscription service;
 }

@@ -4,6 +4,8 @@ import com.aktios.newsletters.model.entity.Subscription;
 import com.aktios.newsletters.model.entity.SubscriptionPeriods;
 import com.aktios.newsletters.model.entity.Tag;
 import com.aktios.newsletters.model.entity.User;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONObject;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -25,9 +27,9 @@ public class Utils {
     User user = new User();
     user.setId(111);
     user.setEmail("test@email.com");
-    user.setName("Name");
-    user.setSurname("Surname");
-    user.setBirthday(LocalDate.of(2000, 01, 01));
+    user.setName("fake name");
+    user.setSurname("fake surname");
+    user.setBirthday(LocalDate.of(2020, 01, 01));
 
     return user;
   }
@@ -49,4 +51,25 @@ public class Utils {
 
     return Set.of(tag, tag2);
   }
+
+  public static String JsonFakeSubscription() {
+     return "{\n" +
+             "    \"subscriptionPeriod\": \"MONTHLY\",\n" +
+             "    \"user\": {\n" +
+             "        \"email\": \"test@email.com\",\n" +
+             "        \"name\": \"fake name\",\n" +
+             "        \"surname\": \"fake surname\",\n" +
+             "        \"birthday\": \"2020-01-01\"\n" +
+             "    },\n" +
+             "    \"tags\": [\n" +
+             "        {\n" +
+             "            \"name\": \"FAKE TAG\"\n" +
+             "        },\n" +
+             "        {\n" +
+             "            \"name\": \"ANOTHER FAKE TAG\"\n" +
+             "        }\n" +
+             "    ]\n" +
+             "}";
+  }
+
 }

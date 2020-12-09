@@ -17,7 +17,7 @@ import java.util.Set;
 @Component
 public class MockSeed implements CommandLineRunner {
 
-  public static final Boolean ENABLE_MOCK_DATA = false;
+  public static final Boolean ENABLE_MOCK_DATA = true;
 
   private TagRepository tagRepository;
   private UserRepository userRepository;
